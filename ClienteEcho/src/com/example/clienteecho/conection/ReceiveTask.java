@@ -1,21 +1,15 @@
 package com.example.clienteecho.conection;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Socket;
 
 import android.os.AsyncTask;
 
-import com.example.clienteecho.data.SingletonHome;
 import com.example.clienteecho.view.EnviarMensajesWindow;
 
 public class ReceiveTask extends AsyncTask<Void, Void, Void> {
 	  
 	 
 	  EnviarMensajesWindow window;
-	  SingletonHome s= SingletonHome.getInstance();
 	  String message,ip;
 	  PrintWriter printwriter;
 	  

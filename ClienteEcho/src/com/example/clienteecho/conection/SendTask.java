@@ -2,22 +2,17 @@ package com.example.clienteecho.conection;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 
-import com.example.clienteecho.data.SingletonHome;
 import com.example.clienteecho.view.EnviarMensajesWindow;
 
 public class SendTask extends AsyncTask<Void, Void, Void> {
 	  
 	 
 	  EnviarMensajesWindow window;
-	  SingletonHome s= SingletonHome.getInstance();
 	  String message,ip,ipAddress;
 	  PrintWriter printwriter;
 	  
