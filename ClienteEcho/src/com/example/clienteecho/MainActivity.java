@@ -32,7 +32,7 @@ public class MainActivity extends ActionBarActivity {
 	  setContentView(R.layout.activity_main);
 	  
 	  editTextAddress = (EditText)findViewById(R.id.address);
-	
+	  
 	
 	 }
 	 

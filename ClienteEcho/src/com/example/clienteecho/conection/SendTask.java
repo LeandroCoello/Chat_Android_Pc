@@ -2,12 +2,13 @@ package com.example.clienteecho.conection;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import android.app.Activity;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.example.clienteecho.data.SingletonHome;
 import com.example.clienteecho.view.EnviarMensajesWindow;
@@ -17,7 +18,7 @@ public class SendTask extends AsyncTask<Void, Void, Void> {
 	 
 	  EnviarMensajesWindow window;
 	  SingletonHome s= SingletonHome.getInstance();
-	  String message,ip;
+	  String message,ip,ipAddress;
 	  PrintWriter printwriter;
 	  
 		public String getMessage() {
@@ -28,10 +29,11 @@ public class SendTask extends AsyncTask<Void, Void, Void> {
 			this.message = message;
 		}
 	
-		public SendTask(EnviarMensajesWindow ventana,String ip, String mes){
+		public SendTask(EnviarMensajesWindow ventana, String ip, String mes){
 		 	   window= ventana;
 		 	   this.ip=ip;
 		 	   message=mes;
+
 		 }
 
 	  @Override
@@ -41,13 +43,16 @@ public class SendTask extends AsyncTask<Void, Void, Void> {
 	   try {
 		   
 		   Socket socketWriter = new Socket(ip, 7);
-		 
+		   if(message.isEmpty()){message="0";}
 			printwriter = new PrintWriter(socketWriter.getOutputStream(), true);
 			printwriter.write(message); 
 			printwriter.flush();
 			printwriter.close();
 			socketWriter.close();
-			window.agregarMensaje("Enviado: "+message);
+			
+		
+			
+			window.agregarMensaje("Enviado: "+window.getIpWifiAddr()+" "+message);
 			
 			
 		} catch (UnknownHostException e) {

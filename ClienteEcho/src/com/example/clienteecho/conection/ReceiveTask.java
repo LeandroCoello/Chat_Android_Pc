@@ -1,13 +1,12 @@
 package com.example.clienteecho.conection;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
-import android.app.Activity;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.example.clienteecho.data.SingletonHome;
 import com.example.clienteecho.view.EnviarMensajesWindow;
@@ -36,14 +35,13 @@ public class ReceiveTask extends AsyncTask<Void, Void, Void> {
 	  @Override
 	  protected Void doInBackground(Void... arg0) {
 	  
-	   
-	   
+	     /* 
 		   
-		  /* while (true) {
+		   while (true) {
 				try {
 	 
-					clientSocket = serverSocket.accept(); // accept the client connection
-					inputStreamReader = new InputStreamReader(clientSocket.getInputStream());
+					Socket socketListener = new Socket(ip, 9);
+					inputStreamReader = new InputStreamReader(socketListener.getInputStream());
 					bufferedReader = new BufferedReader(inputStreamReader); // get the client message
 					message = bufferedReader.readLine();
 	 
