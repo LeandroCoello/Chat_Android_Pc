@@ -1,9 +1,12 @@
 package com.example.clienteecho.view;
 
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -19,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.clienteecho.R;
+import com.example.clienteecho.conection.ReceiveThread;
 import com.example.clienteecho.conection.SendTask;
 
 
@@ -27,38 +31,41 @@ import com.example.clienteecho.conection.SendTask;
 
 public class EnviarMensajesWindow extends Activity{
 
-	EditText text1;
+	EditText mensajeBox;
 	ListView l;
 	Button send;
 	ArrayList<String> mensajes = new ArrayList<String>();
 	EnviarMensajesWindow w = this;
-	String ip;
+	String ip,message;
+	Socket socketWriter;
+	ReceiveThread recTask;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.enviar_mensajes);
 	
-		 text1 = (EditText)findViewById(R.id.mensaje);
+		 mensajeBox = (EditText)findViewById(R.id.mensaje);
 		 send = (Button)findViewById(R.id.send);
 		 l= (ListView)findViewById(R.id.lista);
 		 ip=(String) getIntent().getExtras().getString("ip");
 		 
 		 ArrayAdapter <String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, mensajes);
 	        l.setAdapter(adapter);
-		 
+	     
+	     
 		 send.setOnClickListener(buttonConnectOnClickListener);
-//		 ReceiveTask recTask = new ReceiveTask(w,ip);
-//		 ReceiveTask execute();
+		 recTask = new ReceiveThread(this,ip);
+		 recTask.start();
 		 				
 	}
 	
-	 OnClickListener buttonConnectOnClickListener = 
+		 OnClickListener buttonConnectOnClickListener = 
 			   new OnClickListener(){
 
 			    @Override
 			    public void onClick(View arg0) {
-			     SendTask sendTask = new SendTask(w,ip,text1.getText().toString());
+			     SendTask sendTask = new SendTask(w,ip,mensajeBox.getText().toString());
 			     
 			      sendTask.execute();
 			    }};
@@ -74,8 +81,21 @@ public class EnviarMensajesWindow extends Activity{
 	}
 	
 	public void clear(){
-		text1.setText("");
+		mensajeBox.setText("");
 	}
+	
+	public void conectar(){
+		
+		try {
+			socketWriter = new Socket(ip, 7);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 	public String getIpWifiAddr() {
 		   WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
 		   WifiInfo wifiInfo = wifiManager.getConnectionInfo();
@@ -89,6 +109,7 @@ public class EnviarMensajesWindow extends Activity{
 		   (ip >> 24 & 0xff));
 
 		   return ipString;
+	
 		}
 	
 	public static String getLocalIpAddress() {
@@ -109,4 +130,10 @@ public class EnviarMensajesWindow extends Activity{
 	    }
 	    return null;
 	  }
+	
+	@Override
+	public void onBackPressed(){
+//		recTask.cerrar();
+		super.onBackPressed();
+	}
 }

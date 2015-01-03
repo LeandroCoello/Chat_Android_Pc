@@ -35,20 +35,17 @@ public class SendTask extends AsyncTask<Void, Void, Void> {
 	  protected Void doInBackground(Void... arg0) {
 	  
 	   
-	   try {
+	  try {
 		   
-		   Socket socketWriter = new Socket(ip, 7);
-		   if(message.isEmpty()){message="0";}
-			printwriter = new PrintWriter(socketWriter.getOutputStream(), true);
-			printwriter.write(message); 
-			printwriter.flush();
-			printwriter.close();
-			socketWriter.close();
-			
+		Socket socketWriter = new Socket(ip, 7);
 		
-			
-			window.agregarMensaje("Enviado: "+window.getIpWifiAddr()+" "+message);
-			
+		 if(message.isEmpty()){message="0";}
+		
+		printwriter = new PrintWriter(socketWriter.getOutputStream(), true);
+		printwriter.write(message); 
+		printwriter.flush();
+		printwriter.close();
+		window.agregarMensaje("Enviado: "+message);
 			
 		} catch (UnknownHostException e) {
 			e.printStackTrace();

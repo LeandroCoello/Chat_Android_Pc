@@ -6,8 +6,8 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.ServerSocket;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 import javax.swing.DefaultListModel;
@@ -27,14 +27,14 @@ public class ServerEcho {
 	private static JTextField mensajeAEnviar = new JTextField("",20);
 	private static InputStreamReader inputStreamReader;
 	private static BufferedReader bufferedReader;
-	private static String message;
+	private static String message,ipCliente;
 	private static DefaultListModel<String > mensajes = new DefaultListModel<String>();
 	private static JList<String> Lista = new JList<String>(mensajes);
 	private static JScrollPane panelDesplazamiento = new JScrollPane(Lista);
 	private static JButton enviar = new JButton("Enviar");
 	
-	
-	  public static void setearText(JTextField text, String texto){
+
+	public static void setearText(JTextField text, String texto){
 		  text.setText(texto);
 		  text.setHorizontalAlignment(JTextField.CENTER);
 
@@ -60,10 +60,10 @@ public class ServerEcho {
 		   IpString.setHorizontalAlignment(JTextField.CENTER);
 		   
 		   Estado.setEditable(false);
-		   IpString.setHorizontalAlignment(JTextField.CENTER);
+		   Estado.setHorizontalAlignment(JTextField.CENTER);
 
 		   Mensaje.setEditable(false);
-		   IpString.setHorizontalAlignment(JTextField.CENTER);
+		   Mensaje.setHorizontalAlignment(JTextField.CENTER);
 		   
 		   mensajeAEnviar.setHorizontalAlignment(JTextField.LEFT);
 		  
@@ -88,57 +88,73 @@ public class ServerEcho {
 		   f.setSize(325,350);
 		   f.setVisible(true);
 		  
-		   try {
-		          ServerSocket sk = new ServerSocket(7);
-		          
-		          setearText(IpString,"Ip: "+InetAddress.getLocalHost().getHostAddress()+" - Puerto: "+7);
-		          setearText(Estado,"Escuchando..");
-		          boolean terminado = false;
-		          while (terminado == false) {
-		                
-		        	   	 Socket cliente = sk.accept();
-			             setearText(Estado,"Cliente Conectado.");
-		                 inputStreamReader = new InputStreamReader(cliente.getInputStream());
-		 				 bufferedReader = new BufferedReader(inputStreamReader); // get the client message
-		 				 message = bufferedReader.readLine();
-		 				 		 				
-		 				 if (message.equals("fin")){terminado = true;}
-		 				 		 				 
-		 				 setearText(Mensaje,message);
-		 				 agregarMensaje("Recibido: "+message);
-		 				 
-		 				 Lista.ensureIndexIsVisible(Lista.getModel().getSize()-1);
-
-		 				 cliente.close();
-		 				
-		                 
-		          }
-		          sk.close();
-		          System.exit(0);
-		       
-		   } catch (IOException e) {
-		          System.out.println(e);
-		   }
+		   ListenerThread hilo = new ListenerThread();
+		   hilo.setAts(Estado, IpString, Mensaje, Lista, mensajes,ipCliente);  
+		   hilo.run();
+		   
 		  
-		 
 		   
 		  }//fin main
 	  
-	  public static ActionListener enviarMensajeActionListener(){
+	  public static JTextField getMensaje() {
+		return Mensaje;
+	}
+
+		
+	  public static JTextField getEstado() {
+		return Estado;
+	}
+
+
+	public static JTextField getIpString() {
+		return IpString;
+	}
+
+
+
+	public static JList<String> getLista() {
+		return Lista;
+	}
+
+
+
+	public static ActionListener enviarMensajeActionListener(){
 		  
 		  		  
 		  return new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-//					 enviarMensaje(mensajeAEnviar.getText());
-					agregarMensaje("Enviado: "+getMensajeAEnviar().getText());
-					clearTextbox();
+					enviarMensaje();
+				
 				}
 			};
 		  
 	  }
 	  
+	  public static void enviarMensaje(){
+		  /*try {
+			Socket socketWriter = new Socket(ipCliente,8000);
+			
+			OutputStream outstream = socketWriter.getOutputStream(); 
+			PrintWriter out = new PrintWriter(outstream);
+			out.print(mensajeAEnviar.getText());
+			
+			agregarMensaje("Enviado: "+getMensajeAEnviar().getText());
+			clearTextbox();
+			
+			socketWriter.close();			
+			outstream.close();
+			out.close();
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}*/
+		SendThread hilo = new SendThread(mensajes, mensajeAEnviar, ipCliente);
+		hilo.run();
+	  }
+	
 	  public static void agregarMensaje(String m){
 		  
 		  mensajes.addElement(m);
